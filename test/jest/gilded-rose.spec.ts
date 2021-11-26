@@ -1,39 +1,81 @@
 import { Item, GildedRose } from "@/gilded-rose";
 
 describe("Gilded Rose", () => {
-  it("the quality of an item is never negative", () => {
-    let item = new Item("foo", 1, 1);
-    let gildedRose = new GildedRose([item]);
+  describe("Normal items", () => {
+    it("the quality of an item is never negative", () => {
+      let item = new Item("foo", 1, 1);
+      let gildedRose = new GildedRose([item]);
 
-    gildedRose.updateQuality();
-    gildedRose.updateQuality();
+      gildedRose.updateQuality();
+      gildedRose.updateQuality();
 
-    expect(item.quality).toBe(0);
+      expect(item.quality).toBe(0);
+    });
+
+    it("once the sell by date has passed, quality degrades twice as fast", () => {
+      let item = new Item("foo", 0, 10);
+      let gildedRose = new GildedRose([item]);
+
+      gildedRose.updateQuality();
+
+      // decreases by 2 instead of 1
+      expect(item.quality).toBe(8);
+    });
   });
 
-  test.todo(
-    "the quality of an item is never increased above 50 unless it is Sulfuras"
-  );
+  describe("Special items", () => {
+    let Sulfuras = new Item("Sulfuras, Hand of Ragnaros", 0, 80);
+    let agedBrie = new Item("Aged Brie", 0, 36);
+    let backstagePass = new Item(
+      "Backstage passes to a TAFKAL80ETC concert",
+      11,
+      20
+    );
 
-  test.todo("once the sell by date has passed, quality degrades twice as fast");
+    let gildedRose = new GildedRose([Sulfuras, agedBrie, backstagePass]);
 
-  test.todo("Aged Brie increases in quality the older it gets");
+    it("Aged Brie increases in quality the older it gets", () => {
+      gildedRose.updateQuality();
+      expect(agedBrie.quality).toBe(38);
+    });
 
-  test.todo("the quality of an item is never more than 50");
+    it("Backstage passes' increase in quality as SellIn approaches", () => {
+      expect(backstagePass.quality).toBe(21);
+    });
 
-  test.todo("Sulfuras never has to be sold or decreases in quality");
+    it("Backstage passes' quality increase by 2 when there are 10 days left", () => {
+      gildedRose.updateQuality();
+      expect(backstagePass.quality).toBe(23);
+    });
 
-  test.todo("Sulfuras quality is 80 and never changes");
+    it("Backstage passes' quality increase by 3 when there are 5 days or less left", () => {
+      gildedRose.updateQuality(); // quality: 25
+      gildedRose.updateQuality(); // 27
+      gildedRose.updateQuality(); // 29
+      gildedRose.updateQuality(); // 31
+      gildedRose.updateQuality(); // 5 days left
+      expect(backstagePass.quality).toBe(34);
+    });
 
-  test.todo(
-    "Backstage passes' quality increase by 2 when there are 10 days left"
-  );
+    it("Backstage passes' quality drops to 0 after sellIn reaches 0", () => {
+      gildedRose.updateQuality(); // sellIn: 4
+      gildedRose.updateQuality(); // 3
+      gildedRose.updateQuality(); // 2
+      gildedRose.updateQuality(); // 1
+      gildedRose.updateQuality();
+      expect(backstagePass.quality).toBe(0);
+    });
 
-  test.todo(
-    "Backstage passes' quality increase by 3 when there are 5 days or less"
-  );
+    it("the quality of an item doesn't increase above 50", () => {
+      expect(agedBrie.quality).toBe(50);
+    });
 
-  test.todo("Backstage passes' quality drops to 0 after SellIn reaches 0");
+    it("Sulfuras quality is 80 and never changes", () => {
+      expect(Sulfuras.quality).toBe(80);
+    });
+  });
+
+  // new feature
 
   test.todo("Conjured items degrade in quality twice as fast as normal items");
 });
