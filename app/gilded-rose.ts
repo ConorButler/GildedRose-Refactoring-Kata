@@ -11,11 +11,14 @@ export class Item {
 }
 
 export class GildedRose {
-  static specialItems = [
-    "Sulfuras, Hand of Ragnaros",
-    "Aged Brie",
-    "Backstage passes to a TAFKAL80ETC concert",
-  ];
+  static specialItems = {
+    // add new special items here
+    "Sulfuras, Hand of Ragnaros": { normalMultiplier: 0, expiredMultiplier: 0 },
+    "Aged Brie": { normalMultiplier: 1, expiredMultiplier: 1 },
+    "Backstage passes to a TAFKAL80ETC concert": {
+      updateQualityFunction: "updateBackStagePass",
+    },
+  };
   static normalDecayRate = 1;
   static expiredDecayRate = 2;
 
@@ -26,60 +29,59 @@ export class GildedRose {
 
   updateQuality() {
     this.items.forEach((item) => {
-      if (GildedRose.specialItems.includes(item.name)) {
+      if (item.quality >= 50) {
+      } else if (Object.keys(GildedRose.specialItems).includes(item.name)) {
         this.updateSpecialItem(item);
-      } else if (item.name.startsWith("Conjured")) {
-        this.updateConjuredItem(item);
       } else {
         this.updateNormalItem(item);
       }
-
+      if (item.quality <= 0) {
+        item.quality = 0;
+      }
       item.sellIn--;
     });
     return this.items;
   }
 
-  private updateNormalItem(item: Item) {
-    if (item.quality != 0) {
-      item.sellIn <= 0
-        ? (item.quality -= GildedRose.expiredDecayRate)
-        : (item.quality -= GildedRose.normalDecayRate);
-    }
+  private updateItemQuality(
+    item: Item,
+    normalMultiplier: number,
+    expiredMultiplier = normalMultiplier
+    // supports a custom rate for when item is expired
+  ) {
+    item.sellIn <= 0
+      ? (item.quality += GildedRose.expiredDecayRate * expiredMultiplier)
+      : (item.quality += GildedRose.normalDecayRate * normalMultiplier);
   }
 
-  private updateConjuredItem(item: Item) {
-    // repetition
-    if (item.quality != 0) {
-      item.sellIn <= 0
-        ? (item.quality -= GildedRose.expiredDecayRate * 2)
-        : (item.quality -= GildedRose.normalDecayRate * 2);
-    }
+  private updateNormalItem(item: Item) {
+    item.name.startsWith("Conjured")
+      ? this.updateItemQuality(item, -2)
+      : this.updateItemQuality(item, -1);
   }
 
   private updateSpecialItem(item: Item) {
-    if (item.quality >= 50) {
-      return;
+    let specialItemRules = GildedRose.specialItems[item.name];
+    if (specialItemRules.updateQualityFunction) {
+      this[specialItemRules.updateQualityFunction](item);
+    } else {
+      this.updateItemQuality(
+        item,
+        specialItemRules.normalMultiplier,
+        specialItemRules.expiredMultiplier
+      );
     }
-    if (item.name == "Aged Brie") {
-      this.updateAgedBrie(item);
-    } else if (item.name == "Backstage passes to a TAFKAL80ETC concert") {
-      this.updateBackStagePass(item);
-    }
-  }
-
-  private updateAgedBrie(item: Item) {
-    item.quality += 2;
   }
 
   private updateBackStagePass(item: Item) {
     if (item.sellIn <= 0) {
       item.quality = 0;
     } else if (item.sellIn <= 5) {
-      item.quality += 3;
+      this.updateItemQuality(item, 3);
     } else if (item.sellIn <= 10) {
-      item.quality += 2;
+      this.updateItemQuality(item, 2);
     } else {
-      item.quality += 1; // don't use ++ for clarity
+      this.updateItemQuality(item, 1);
     }
   }
 }

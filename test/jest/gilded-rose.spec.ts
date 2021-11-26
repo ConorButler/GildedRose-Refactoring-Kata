@@ -101,4 +101,14 @@ describe("Gilded Rose", () => {
       });
     });
   });
+
+  describe("Edge cases", () => {
+    it("creating an object with negative quality is reset to 0 after update", () => {
+      let badItem = new Item("Bad item", 1, -5);
+      let gildedRose = new GildedRose([badItem]);
+
+      gildedRose.updateQuality();
+      expect(badItem.quality).toBe(0);
+    });
+  });
 });
