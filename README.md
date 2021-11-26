@@ -1,6 +1,6 @@
 # Gilded Rose
 
-This is the Gilded Rose kata in TypeScript.
+This is the [Gilded Rose](https://github.com/emilybache/GildedRose-Refactoring-Kata) kata in TypeScript.
 
 ## Getting started
 
@@ -17,17 +17,11 @@ To run all tests
 ### Jest way
 
 ```sh
-npm run test:jest
+npm test
 ```
 
 To run all tests in watch mode
 
 ```sh
-npm run test:jest:watch
-```
-
-### Mocha way
-
-```sh
-npm run test:mocha
+npm test:watch
 ```
