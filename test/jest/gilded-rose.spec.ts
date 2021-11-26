@@ -2,24 +2,24 @@ import { Item, GildedRose } from "@/gilded-rose";
 
 describe("Gilded Rose", () => {
   describe("Normal items", () => {
-    it("the quality of an item is never negative", () => {
-      let item = new Item("foo", 1, 1);
-      let gildedRose = new GildedRose([item]);
+    let item = new Item("foo", 1, 5);
+    let gildedRose = new GildedRose([item]);
 
+    it("normal items decrease in quality by 1 each update", () => {
+      gildedRose.updateQuality();
+      expect(item.quality).toBe(4);
+    });
+
+    it("once the sell by date has passed, quality degrades twice as fast", () => {
+      gildedRose.updateQuality();
+      expect(item.quality).toBe(2);
+    });
+
+    it("the quality of an item is never negative", () => {
       gildedRose.updateQuality();
       gildedRose.updateQuality();
 
       expect(item.quality).toBe(0);
-    });
-
-    it("once the sell by date has passed, quality degrades twice as fast", () => {
-      let item = new Item("foo", 0, 10);
-      let gildedRose = new GildedRose([item]);
-
-      gildedRose.updateQuality();
-
-      // decreases by 2 instead of 1
-      expect(item.quality).toBe(8);
     });
   });
 
