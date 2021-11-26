@@ -76,6 +76,9 @@ describe("Gilded Rose", () => {
   });
 
   // new feature
-
-  test.todo("Conjured items degrade in quality twice as fast as normal items");
+  describe("Conjured items", () => {
+    test.todo(
+      "Conjured items degrade in quality twice as fast as normal items"
+    );
+  });
 });
