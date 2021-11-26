@@ -28,10 +28,9 @@ export class GildedRose {
       if (specialItems.includes(item.name)) {
         // handle special items method
       } else {
-        if (item.quality > 0) {
-          item.quality--;
-        }
+        this.updateNormalItem(item);
       }
+      item.sellIn--;
     });
     // for (let i = 0; i < this.items.length; i++) {
     //   if (
@@ -88,5 +87,12 @@ export class GildedRose {
     // }
 
     return this.items;
+  }
+
+  updateNormalItem(item: Item) {
+    if (item.quality == 0) {
+      return;
+    }
+    item.sellIn <= 0 ? (item.quality -= 2) : (item.quality -= 1);
   }
 }
