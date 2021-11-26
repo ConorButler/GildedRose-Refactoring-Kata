@@ -11,7 +11,7 @@ export class Item {
 }
 
 export class GildedRose {
-  specialItems = [
+  static specialItems = [
     "Sulfuras, Hand of Ragnaros",
     "Aged Brie",
     "Backstage passes to a TAFKAL80ETC concert",
@@ -24,36 +24,47 @@ export class GildedRose {
 
   updateQuality() {
     this.items.forEach((item) => {
-      if (this.specialItems.includes(item.name)) {
+      if (GildedRose.specialItems.includes(item.name)) {
         this.updateSpecialItem(item);
+      } else if (item.name.startsWith("Conjured")) {
+        this.updateConjuredItem(item);
       } else {
         this.updateNormalItem(item);
       }
+
       item.sellIn--;
     });
     return this.items;
   }
 
-  updateNormalItem(item: Item) {
-    if (item.quality == 0) {
-      return;
+  private updateNormalItem(item: Item) {
+    if (item.quality != 0) {
+      item.sellIn <= 0 ? (item.quality -= 2) : (item.quality -= 1);
     }
-    item.sellIn <= 0 ? (item.quality -= 2) : (item.quality -= 1);
-    // don't use -- for clarity
   }
 
-  updateSpecialItem(item: Item) {
+  private updateConjuredItem(item: Item) {
+    if (item.quality != 0) {
+      item.sellIn <= 0 ? (item.quality -= 4) : (item.quality -= 2);
+    }
+  }
+
+  private updateSpecialItem(item: Item) {
     if (item.quality >= 50) {
       return;
     }
     if (item.name == "Aged Brie") {
-      item.quality += 2;
+      this.updateAgedBrie(item);
     } else if (item.name == "Backstage passes to a TAFKAL80ETC concert") {
       this.updateBackStagePass(item);
     }
   }
 
-  updateBackStagePass(item: Item) {
+  private updateAgedBrie(item: Item) {
+    item.quality += 2;
+  }
+
+  private updateBackStagePass(item: Item) {
     if (item.sellIn <= 0) {
       item.quality = 0;
     } else if (item.sellIn <= 5) {

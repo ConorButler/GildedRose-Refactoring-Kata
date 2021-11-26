@@ -77,8 +77,20 @@ describe("Gilded Rose", () => {
 
   // new feature
   describe("Conjured items", () => {
-    test.todo(
-      "Conjured items degrade in quality twice as fast as normal items"
-    );
+    let conjuredApple = new Item("Conjured Apple", 1, 10);
+    let conjuredOrange = new Item("Conjured Orange", 1, 10);
+    let gildedRose = new GildedRose([conjuredApple, conjuredOrange]);
+
+    it("Conjured items degrade in quality twice as fast as normal items", () => {
+      gildedRose.updateQuality();
+      expect(conjuredApple.quality).toBe(8);
+      expect(conjuredOrange.quality).toBe(8);
+    });
+
+    it("Conjured items degrade in quality twice as fast as normal items after sellIn reaches 0", () => {
+      gildedRose.updateQuality();
+      expect(conjuredApple.quality).toBe(4);
+      expect(conjuredOrange.quality).toBe(4);
+    });
   });
 });
