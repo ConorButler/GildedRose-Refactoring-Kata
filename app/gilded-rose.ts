@@ -16,6 +16,8 @@ export class GildedRose {
     "Aged Brie",
     "Backstage passes to a TAFKAL80ETC concert",
   ];
+  static normalDecayRate = 1;
+  static expiredDecayRate = 2;
 
   items: Array<Item>;
   constructor(items = [] as Array<Item>) {
@@ -39,13 +41,17 @@ export class GildedRose {
 
   private updateNormalItem(item: Item) {
     if (item.quality != 0) {
-      item.sellIn <= 0 ? (item.quality -= 2) : (item.quality -= 1);
+      item.sellIn <= 0
+        ? (item.quality -= GildedRose.expiredDecayRate)
+        : (item.quality -= GildedRose.normalDecayRate);
     }
   }
 
   private updateConjuredItem(item: Item) {
     if (item.quality != 0) {
-      item.sellIn <= 0 ? (item.quality -= 4) : (item.quality -= 2);
+      item.sellIn <= 0
+        ? (item.quality -= GildedRose.expiredDecayRate * 2)
+        : (item.quality -= GildedRose.normalDecayRate * 2);
     }
   }
 
