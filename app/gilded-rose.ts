@@ -48,6 +48,7 @@ export class GildedRose {
   }
 
   private updateConjuredItem(item: Item) {
+    // repetition
     if (item.quality != 0) {
       item.sellIn <= 0
         ? (item.quality -= GildedRose.expiredDecayRate * 2)
